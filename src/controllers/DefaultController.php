@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/AppController.php';
 
-class DefaultController extends AppController
+
+final class DefaultController extends AppController
 {
-    public function home(): void
+    public function index(): void
     {
         $this->render('home', [
-            'pageTitle' => 'Strona Główna'
+            'pageTitle' => 'Moja aplikacja',
+        ]);
+    }
+
+    public function notFound(): void
+    {
+        $this->render('not-found', [
+            'pageTitle' => 'Nie znaleziono strony',
         ]);
     }
 }
