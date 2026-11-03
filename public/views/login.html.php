@@ -6,7 +6,7 @@
             <h1>Cała dokumentacja Twojej instalacji w jednym miejscu.</h1>
             <p>Karty instalacji, zgłoszenia serwisowe, protokoły prac i przypomnienia o przeglądach dla firm instalacyjnych i ich klientów.</p>
         </div>
-        <p class="note" style="color:#BBD9E6">Dla instalatorów alarmów, monitoringu wizyjnego i sieci.</p>
+        <p class="note on-dark">Dla instalatorów alarmów, monitoringu wizyjnego i sieci.</p>
     </section>
     <main class="auth-form">
         <div>
@@ -26,8 +26,8 @@
                 <button type="submit" class="btn btn-block">Zaloguj się</button>
                 <p><a href="#">Nie pamiętam hasła</a></p>
             </form>
-            <section id="rejestracja" class="brand-box" style="margin-top:24px">
-                <h2 style="font-size:16px">Pierwszy raz tutaj?</h2>
+            <section id="rejestracja" class="brand-box mt-4">
+                <h2 class="title-sm">Pierwszy raz tutaj?</h2>
                 <p>Klient zakłada konto, podając e-mail i hasło. Konta techników tworzy administrator firmy instalacyjnej.</p>
             </section>
         </div>

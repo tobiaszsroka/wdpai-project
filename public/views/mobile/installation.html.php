@@ -2,7 +2,7 @@
 <div class="phone">
     <header class="phone-head">
         <p>Instalacja · <?= htmlspecialchars($installation['client']) ?></p>
-        <h1 style="font-size:22px"><?= htmlspecialchars($installation['address']) ?></h1>
+        <h1 class="title-md"><?= htmlspecialchars($installation['address']) ?></h1>
         <p><?= htmlspecialchars($installation['type']) ?> · uruchomiona <?= htmlspecialchars($installation['since']) ?></p>
     </header>
     <main class="phone-body">
@@ -10,8 +10,8 @@
             <span><strong>Przegląd roczny za <?= (int) $installation['daysLeft'] ?> dni</strong><br>
             <small>Termin: <?= htmlspecialchars($installation['inspection']) ?> · wymiana akumulatora centrali</small></span>
         </p>
-        <h2 class="muted" style="font-size:15px">Urządzenia (<?= count($installation['devices']) ?>)</h2>
-        <ul class="list" style="display:flex;flex-direction:column;gap:8px">
+        <h2 class="muted title-sm">Urządzenia (<?= count($installation['devices']) ?>)</h2>
+        <ul class="list device-list">
             <?php foreach ($installation['devices'] as $d): ?>
                 <li class="device">
                     <span><strong><?= htmlspecialchars($d['name']) ?></strong><small><?= htmlspecialchars($d['place']) ?></small></span>
