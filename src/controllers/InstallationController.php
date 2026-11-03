@@ -53,4 +53,27 @@ final class InstallationController extends AppController
             'installation' => $installation,
         ]);
     }
+
+    public function mobileCard(): void
+    {
+        $this->render('mobile/installation', [
+            'pageTitle' => 'Karta instalacji',
+            'installation' => [
+                'client' => 'Anna Nowak',
+                'address' => 'Dom, ul. Lipowa 12, Kraków',
+                'type' => 'Alarm + monitoring + sieć',
+                'since' => '14.03.2025',
+                'inspection' => '14.11.2026',
+                'daysLeft' => 12,
+                'devices' => [
+                    ['name' => 'Centrala alarmowa', 'place' => 'Garaż, szafka techniczna', 'state' => 'Akumulator', 'tone' => 'warn'],
+                    ['name' => 'Czujnik ruchu', 'place' => 'Salon, strefa 1', 'state' => 'OK', 'tone' => 'ok'],
+                    ['name' => 'Kamera IP – ogród', 'place' => 'Elewacja tylna, kanał 3', 'state' => 'Awaria', 'tone' => 'bad'],
+                    ['name' => 'Kamera IP – wjazd', 'place' => 'Elewacja przednia, kanał 1', 'state' => 'OK', 'tone' => 'ok'],
+                    ['name' => 'Rejestrator NVR', 'place' => '8 kanałów, szafka techniczna', 'state' => 'OK', 'tone' => 'ok'],
+                    ['name' => 'Switch PoE', 'place' => 'Szafka techniczna', 'state' => 'OK', 'tone' => 'ok'],
+                ],
+            ],
+        ]);
+    }
 }
