@@ -2,8 +2,6 @@
 
 Książka serwisowa instalacji alarmowych i monitoringu wizyjnego ze zgłoszeniami serwisowymi i generatorem protokołów prac. Aplikacja jest dla małych firm instalacyjnych i ich klientów: zastępuje papierowe dokumenty, telefony i zeszyty jednym miejscem z historią instalacji, zgłoszeń i przeglądów.
 
-Projekt realizowany na zajęcia *Projektowanie aplikacji internetowych 26/27* (Politechnika Krakowska).
-
 ## Problem i rozwiązanie
 
 Firma instalacyjna prowadzi dokumentację w różnych miejscach: protokoły na papierze, zgłoszenia przez telefon, terminy przeglądów w pamięci. Klient nie wie, co dokładnie zamontowano u niego i kiedy jest następny przegląd. SerwisBook gromadzi karty instalacji z listą urządzeń, przyjmuje zgłoszenia usterek, pozwala technikowi wystawić protokół do wydruku lub PDF i przypomina o zbliżających się przeglądach.
