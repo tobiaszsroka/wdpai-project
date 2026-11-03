@@ -7,7 +7,7 @@
             <button type="button" class="btn" onclick="window.print()">Drukuj / zapisz jako PDF</button>
         </header>
         <div class="split">
-            <form class="card" method="post" action="/protocols" style="flex:1 1 300px" aria-label="Dane protokołu">
+            <form class="card panel-form" method="post" action="/protocols" aria-label="Dane protokołu">
                 <div class="field"><label for="client">Klient</label>
                     <select id="client" name="client"><option>Anna Nowak, ul. Lipowa 12</option><option>Jan Kowalski, ul. Polna 3</option></select></div>
                 <div class="field"><label for="type">Rodzaj instalacji (szablon)</label>
@@ -22,8 +22,8 @@
             </form>
             <section class="paper" aria-label="Podgląd protokołu">
                 <header>
-                    <div><strong class="note" style="letter-spacing:1px;text-transform:uppercase">Firma instalacyjna</strong><p>ul. Przykładowa 1, 30-000 Kraków</p></div>
-                    <p style="text-align:right;font-size:14px">Nr: <strong><?= htmlspecialchars($protocol['number']) ?></strong><br>Data: <?= htmlspecialchars($protocol['date']) ?></p>
+                    <div><strong class="eyebrow">Firma instalacyjna</strong><p>ul. Przykładowa 1, 30-000 Kraków</p></div>
+                    <p class="doc-meta">Nr: <strong><?= htmlspecialchars($protocol['number']) ?></strong><br>Data: <?= htmlspecialchars($protocol['date']) ?></p>
                 </header>
                 <h2>Protokół wykonania prac – <?= htmlspecialchars(mb_strtolower($protocol['type'])) ?></h2>
                 <div class="two">

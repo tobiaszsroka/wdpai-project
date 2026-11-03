@@ -15,7 +15,7 @@
             <?php endforeach; ?>
         </section>
         <div class="split">
-            <section class="card" style="flex:2 1 420px">
+            <section class="card grow-2">
                 <h2>Najnowsze zgłoszenia</h2>
                 <div class="table-wrap">
                     <table>
@@ -33,7 +33,7 @@
                     </table>
                 </div>
             </section>
-            <section class="card" style="flex:1 1 280px">
+            <section class="card grow-1">
                 <h2>Nadchodzące przeglądy</h2>
                 <ul class="list">
                     <?php foreach ($inspections as $i): ?>

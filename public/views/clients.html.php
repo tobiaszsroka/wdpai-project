@@ -5,13 +5,13 @@
         <header class="page-head">
             <h1>Klienci i instalacje</h1>
             <form class="toolbar" role="search">
-                <label for="search" class="visually-hidden" style="position:absolute;left:-9999px">Szukaj klienta</label>
-                <input id="search" type="search" placeholder="Szukaj klienta lub adresu" style="width:260px">
+                <label for="search" class="visually-hidden">Szukaj klienta</label>
+                <input id="search" type="search" placeholder="Szukaj klienta lub adresu">
                 <a class="btn" href="#">+ Nowy klient</a>
             </form>
         </header>
         <div class="split">
-            <section aria-label="Lista klientów" style="flex:1 1 280px">
+            <section aria-label="Lista klientów" class="grow-1">
                 <ul class="client-list">
                     <?php foreach ($clients as $i => $c): ?>
                         <li<?= $i === 0 ? ' aria-current="true"' : '' ?>>
@@ -21,8 +21,8 @@
                     <?php endforeach; ?>
                 </ul>
             </section>
-            <section aria-label="Karta klienta" style="flex:2 1 480px">
-                <article class="card" style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <section aria-label="Karta klienta" class="grow-2">
+                <article class="card card-head">
                     <div>
                         <h2><?= htmlspecialchars($client['name']) ?></h2>
                         <p class="muted"><?= htmlspecialchars($client['contact']) ?></p>
@@ -31,7 +31,7 @@
                     <div class="toolbar"><a class="btn btn-outline" href="#">Edytuj</a><a class="btn" href="#">+ Instalacja</a></div>
                 </article>
                 <article class="card">
-                    <header style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+                    <header class="card-head">
                         <h3><?= htmlspecialchars($installation['title']) ?></h3>
                         <span class="chip chip-warn">Przegląd <?= htmlspecialchars($installation['inspection']) ?></span>
                     </header>

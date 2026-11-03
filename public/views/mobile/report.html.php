@@ -14,7 +14,7 @@
         <div class="field"><label for="photo">Zdjęcie (opcjonalnie)</label>
             <input id="photo" name="photo" type="file" accept="image/*"></div>
         <p class="info-box">Po wysłaniu dostaniesz numer zgłoszenia i powiadomienie e-mail o zmianie statusu.</p>
-        <button type="submit" class="btn btn-block" style="margin-top:auto">Wyślij zgłoszenie</button>
+        <button type="submit" class="btn btn-block mt-auto">Wyślij zgłoszenie</button>
     </form>
 </div>
 <?php require __DIR__ . '/../partials/foot.html.php'; ?>

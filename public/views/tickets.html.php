@@ -27,7 +27,7 @@
                                 <td><?= htmlspecialchars($t['created']) ?></td>
                                 <td>
                                     <?php if ($t['technician'] === null): ?>
-                                        <label for="assign-<?= (int) $t['id'] ?>" style="position:absolute;left:-9999px">Przypisz technika do zgłoszenia <?= (int) $t['id'] ?></label>
+                                        <label for="assign-<?= (int) $t['id'] ?>" class="visually-hidden">Przypisz technika do zgłoszenia <?= (int) $t['id'] ?></label>
                                         <select id="assign-<?= (int) $t['id'] ?>"><option>Wybierz technika…</option><?php foreach ($technicians as $n): ?><option><?= htmlspecialchars($n) ?></option><?php endforeach; ?></select>
                                     <?php else: ?>
                                         <?= htmlspecialchars($t['technician']) ?>
