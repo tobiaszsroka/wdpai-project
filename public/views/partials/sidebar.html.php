@@ -16,7 +16,6 @@ $items = [
     <div class="user">
         <strong><?= htmlspecialchars($userName) ?></strong>
         <span><?= htmlspecialchars($userRole) ?></span>
-        <button type="button" class="theme-toggle" data-theme-toggle>Motyw jasny / ciemny</button>
         <a href="/login">Wyloguj</a>
     </div>
 </aside>
