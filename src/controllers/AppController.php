@@ -17,4 +17,12 @@ abstract class AppController
         extract($variables, EXTR_SKIP);
         require $templatePath;
     }
+
+    protected function renderNotFound(): void
+    {
+        http_response_code(404);
+        $this->render('not-found', [
+            'pageTitle' => 'Nie znaleziono strony',
+        ]);
+    }
 }
