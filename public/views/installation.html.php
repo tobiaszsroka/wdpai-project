@@ -2,18 +2,18 @@
 <?php require __DIR__ . '/partials/site-nav.html.php'; ?>
 <main class="page">
     <article class="card">
-        <h1>Instalacja nr <?= (int) $installationId ?></h1>
+        <h1>Instalacja nr <?= $installation->getId() ?></h1>
         <dl class="details">
             <dt>Klient</dt>
-            <dd><?= htmlspecialchars($installation['client']) ?></dd>
+            <dd><?= htmlspecialchars($installation->getClientName()) ?></dd>
             <dt>Adres</dt>
-            <dd><?= htmlspecialchars($installation['address']) ?></dd>
+            <dd><?= htmlspecialchars($installation->getAddress()) ?></dd>
             <dt>Rodzaj instalacji</dt>
-            <dd><?= htmlspecialchars($installation['type']) ?></dd>
+            <dd><?= htmlspecialchars($installation->getType()) ?></dd>
             <dt>Następny przegląd</dt>
             <dd>
-                <time datetime="<?= htmlspecialchars($installation['nextInspection']) ?>">
-                    <?= htmlspecialchars($installation['nextInspection']) ?>
+                <time datetime="<?= htmlspecialchars($installation->getNextInspection()->format('Y-m-d')) ?>">
+                    <?= htmlspecialchars($installation->getNextInspection()->format('d.m.Y')) ?>
                 </time>
             </dd>
         </dl>

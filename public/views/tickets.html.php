@@ -21,19 +21,19 @@
                     <tbody>
                         <?php foreach ($tickets as $t): ?>
                             <tr>
-                                <td><strong>#<?= (int) $t['id'] ?></strong></td>
-                                <td><?= htmlspecialchars($t['client']) ?></td>
-                                <td><?= htmlspecialchars($t['category']) ?></td>
-                                <td><?= htmlspecialchars($t['created']) ?></td>
+                                <td><strong>#<?= $t->getId() ?></strong></td>
+                                <td><?= htmlspecialchars($t->getClientName()) ?></td>
+                                <td><?= htmlspecialchars($t->getCategory()) ?></td>
+                                <td><?= htmlspecialchars($t->getCreatedAt()->format('d.m, H:i')) ?></td>
                                 <td>
-                                    <?php if ($t['technician'] === null): ?>
-                                        <label for="assign-<?= (int) $t['id'] ?>" class="visually-hidden">Przypisz technika do zgłoszenia <?= (int) $t['id'] ?></label>
-                                        <select id="assign-<?= (int) $t['id'] ?>"><option>Wybierz technika…</option><?php foreach ($technicians as $n): ?><option><?= htmlspecialchars($n) ?></option><?php endforeach; ?></select>
+                                    <?php if ($t->getTechnician() === null): ?>
+                                        <label for="assign-<?= $t->getId() ?>" class="visually-hidden">Przypisz technika do zgłoszenia <?= $t->getId() ?></label>
+                                        <select id="assign-<?= $t->getId() ?>"><option>Wybierz technika…</option><?php foreach ($technicians as $n): ?><option><?= htmlspecialchars($n) ?></option><?php endforeach; ?></select>
                                     <?php else: ?>
-                                        <?= htmlspecialchars($t['technician']) ?>
+                                        <?= htmlspecialchars($t->getTechnician()) ?>
                                     <?php endif; ?>
                                 </td>
-                                <td><span class="chip chip-<?= htmlspecialchars($t['tone']) ?>"><?= htmlspecialchars($t['status']) ?></span></td>
+                                <td><span class="chip chip-<?= htmlspecialchars($t->getBadgeTone()) ?>"><?= htmlspecialchars($t->getBadgeLabel()) ?></span></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

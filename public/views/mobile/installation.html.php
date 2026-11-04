@@ -1,21 +1,25 @@
 <?php $active = 'installation'; require __DIR__ . '/../partials/head.html.php'; ?>
 <div class="phone">
     <header class="phone-head">
-        <p>Instalacja · <?= htmlspecialchars($installation['client']) ?></p>
-        <h1 class="title-md"><?= htmlspecialchars($installation['address']) ?></h1>
-        <p><?= htmlspecialchars($installation['type']) ?> · uruchomiona <?= htmlspecialchars($installation['since']) ?></p>
+        <p>Instalacja · <?= htmlspecialchars($installation->getClientName()) ?></p>
+        <h1 class="title-md"><?= htmlspecialchars($installation->getTitle()) ?></h1>
+        <p><?= htmlspecialchars($installation->getType()) ?> · uruchomiona <?= htmlspecialchars($installation->getInstalledAt()->format('d.m.Y')) ?></p>
     </header>
     <main class="phone-body">
         <p class="alert" role="status">
-            <span><strong>Przegląd roczny za <?= (int) $installation['daysLeft'] ?> dni</strong><br>
-            <small>Termin: <?= htmlspecialchars($installation['inspection']) ?> · wymiana akumulatora centrali</small></span>
+            <span><?php if ($daysLeft >= 0): ?>
+                <strong>Przegląd roczny za <?= $daysLeft ?> dni</strong><br>
+            <?php else: ?>
+                <strong>Przegląd po terminie o <?= abs($daysLeft) ?> dni</strong><br>
+            <?php endif; ?>
+            <small>Termin: <?= htmlspecialchars($installation->getNextInspection()->format('d.m.Y')) ?><?php if ($installation->getInspectionNote() !== null): ?> · <?= htmlspecialchars($installation->getInspectionNote()) ?><?php endif; ?></small></span>
         </p>
-        <h2 class="muted title-sm">Urządzenia (<?= count($installation['devices']) ?>)</h2>
+        <h2 class="muted title-sm">Urządzenia (<?= count($installation->getDevices()) ?>)</h2>
         <ul class="list device-list">
-            <?php foreach ($installation['devices'] as $d): ?>
+            <?php foreach ($installation->getDevices() as $d): ?>
                 <li class="device">
-                    <span><strong><?= htmlspecialchars($d['name']) ?></strong><small><?= htmlspecialchars($d['place']) ?></small></span>
-                    <span class="chip chip-<?= htmlspecialchars($d['tone']) ?>"><?= htmlspecialchars($d['state']) ?></span>
+                    <span><strong><?= htmlspecialchars($d->getName()) ?></strong><small><?= htmlspecialchars($d->getPlace()) ?></small></span>
+                    <span class="chip chip-<?= htmlspecialchars($d->getState()->tone()) ?>"><?= htmlspecialchars($d->getState()->label()) ?></span>
                 </li>
             <?php endforeach; ?>
         </ul>
