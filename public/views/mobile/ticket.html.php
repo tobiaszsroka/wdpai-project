@@ -2,13 +2,13 @@
 <div class="phone">
     <header class="phone-head">
         <a href="/m/tasks">‹ Moje zadania</a>
-        <div class="row"><h1 class="title-md">Zgłoszenie #<?= (int) $ticket['id'] ?></h1><span class="chip chip-warn"><?= htmlspecialchars($ticket['status']) ?></span></div>
+        <div class="row"><h1 class="title-md">Zgłoszenie #<?= $ticket->getId() ?></h1><span class="chip chip-<?= htmlspecialchars($ticket->getStatus()->tone()) ?>"><?= htmlspecialchars($ticket->getStatus()->label()) ?></span></div>
     </header>
     <main class="phone-body">
         <section class="card">
-            <h2 class="title-sm"><?= htmlspecialchars($ticket['title']) ?></h2>
-            <p class="muted"><?= htmlspecialchars($ticket['place']) ?></p>
-            <p class="description"><?= htmlspecialchars($ticket['description']) ?></p>
+            <h2 class="title-sm"><?= htmlspecialchars($ticket->getTitle()) ?></h2>
+            <p class="muted"><?= htmlspecialchars($ticket->getPlace()) ?></p>
+            <p class="description"><?= htmlspecialchars($ticket->getDescription()) ?></p>
         </section>
         <section>
             <h2 class="muted title-xs">Zdjęcia</h2>
@@ -16,11 +16,11 @@
         </section>
         <section class="card">
             <h2 class="muted title-xs">Historia</h2>
-            <?php foreach ($ticket['history'] as [$when, $what]): ?>
-                <p class="history-item"><strong><?= htmlspecialchars($when) ?></strong> · <?= htmlspecialchars($what) ?></p>
+            <?php foreach ($ticket->getHistory() as [$at, $what]): ?>
+                <p class="history-item"><strong><?= htmlspecialchars($at->format('d.m, H:i')) ?></strong> · <?= htmlspecialchars($what) ?></p>
             <?php endforeach; ?>
         </section>
-        <form method="post" action="/m/tasks/<?= (int) $ticket['id'] ?>">
+        <form method="post" action="/m/tasks/<?= $ticket->getId() ?>">
             <div class="field"><label for="status">Zmień status</label>
                 <select id="status" name="status"><option>Przypisane</option><option>W toku</option><option>Oczekuje na część</option><option>Zakończone</option></select></div>
             <div class="actions-row">

@@ -16,8 +16,6 @@ final class DefaultController extends AppController
 
     public function notFound(): void
     {
-        $this->render('not-found', [
-            'pageTitle' => 'Nie znaleziono strony',
-        ]);
+        $this->renderNotFound();
     }
 }

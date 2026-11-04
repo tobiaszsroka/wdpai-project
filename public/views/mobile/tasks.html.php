@@ -7,10 +7,10 @@
     </header>
     <main class="phone-body">
         <?php foreach ($tasks as $t): ?>
-            <a class="card task" href="/m/tasks/<?= (int) $t['id'] ?>">
-                <span class="row"><time><?= htmlspecialchars($t['time']) ?></time><span class="chip chip-<?= htmlspecialchars($t['tone']) ?>"><?= htmlspecialchars($t['status']) ?></span></span>
-                <strong><?= htmlspecialchars($t['title']) ?></strong>
-                <span class="muted"><?= htmlspecialchars($t['place']) ?></span>
+            <a class="card task" href="/m/tasks/<?= $t->getId() ?>">
+                <span class="row"><time><?= htmlspecialchars((string) $t->getVisitTime()) ?></time><span class="chip chip-<?= htmlspecialchars($t->getBadgeTone()) ?>"><?= htmlspecialchars($t->getBadgeLabel()) ?></span></span>
+                <strong><?= htmlspecialchars($t->getTitle()) ?></strong>
+                <span class="muted"><?= htmlspecialchars($t->getPlace()) ?></span>
             </a>
         <?php endforeach; ?>
     </main>

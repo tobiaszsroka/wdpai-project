@@ -4,8 +4,18 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Repository\InMemoryTicketRepository;
+use App\Repository\TicketRepositoryInterface;
+
 final class TicketController extends AppController
 {
+    private const DEMO_TECHNICIAN = 'Piotr Wiśniewski';
+
+    public function __construct(
+        private readonly TicketRepositoryInterface $tickets = new InMemoryTicketRepository(),
+    ) {
+    }
+
     public function index(): void
     {
         $this->render('tickets', [
@@ -14,13 +24,7 @@ final class TicketController extends AppController
             'userName' => 'Marta Zielińska',
             'userRole' => 'Administrator',
             'technicians' => ['Piotr Wiśniewski', 'Tomasz Lis'],
-            'tickets' => [
-                ['id' => 1042, 'client' => 'Anna Nowak', 'category' => 'Kamera nie działa', 'created' => '01.11, 21:15', 'technician' => 'Piotr Wiśniewski', 'status' => 'Pilne', 'tone' => 'bad'],
-                ['id' => 1041, 'client' => 'Biuro Lex', 'category' => 'Brak połączenia z siecią', 'created' => '31.10, 14:02', 'technician' => 'Tomasz Lis', 'status' => 'W toku', 'tone' => 'warn'],
-                ['id' => 1040, 'client' => 'Jan Kowalski', 'category' => 'Alarm zgłasza błąd', 'created' => '31.10, 09:30', 'technician' => null, 'status' => 'Nowe', 'tone' => 'info'],
-                ['id' => 1039, 'client' => 'Sklep „Pod Dębem”', 'category' => 'Fałszywe alarmy', 'created' => '28.10, 07:50', 'technician' => 'Piotr Wiśniewski', 'status' => 'Zakończone', 'tone' => 'ok'],
-                ['id' => 1038, 'client' => 'Maria Wójcik', 'category' => 'Inne', 'created' => '27.10, 16:44', 'technician' => 'Tomasz Lis', 'status' => 'Zakończone', 'tone' => 'ok'],
-            ],
+            'tickets' => $this->tickets->findAll(),
         ]);
     }
 
@@ -29,31 +33,24 @@ final class TicketController extends AppController
         $this->render('mobile/tasks', [
             'pageTitle' => 'Moje zadania',
             'today' => 'Poniedziałek, 2 listopada',
-            'technician' => 'Piotr Wiśniewski',
-            'tasks' => [
-                ['id' => 1042, 'time' => '09:00', 'status' => 'Pilne', 'tone' => 'bad', 'title' => 'Kamera nie łączy się z rejestratorem', 'place' => 'Anna Nowak · ul. Lipowa 12, Kraków'],
-                ['id' => 1043, 'time' => '11:30', 'status' => 'Zaplanowane', 'tone' => 'info', 'title' => 'Przegląd roczny systemu alarmowego', 'place' => 'Sklep „Pod Dębem” · Rynek 4, Wieliczka'],
-                ['id' => 1044, 'time' => '14:00', 'status' => 'W toku', 'tone' => 'warn', 'title' => 'Wymiana akumulatora w centrali', 'place' => 'Jan Kowalski · ul. Polna 3, Skawina'],
-                ['id' => 1045, 'time' => '16:00', 'status' => 'Zaplanowane', 'tone' => 'info', 'title' => 'Konfiguracja sieci i kamer IP', 'place' => 'Biuro Lex · ul. Długa 21, Kraków'],
-            ],
+            'technician' => self::DEMO_TECHNICIAN,
+            'tasks' => $this->tickets->findByTechnician(self::DEMO_TECHNICIAN),
         ]);
     }
 
     public function mobileShow(int $id): void
     {
+        $ticket = $this->tickets->find($id);
+
+        if ($ticket === null) {
+            $this->renderNotFound();
+
+            return;
+        }
+
         $this->render('mobile/ticket', [
             'pageTitle' => 'Zgłoszenie #' . $id,
-            'ticket' => [
-                'id' => $id,
-                'status' => 'Przypisane',
-                'title' => 'Kamera nie łączy się z rejestratorem',
-                'place' => 'Anna Nowak · ul. Lipowa 12, Kraków',
-                'description' => 'Kamera od strony ogrodu od wczoraj wieczorem pokazuje czarny obraz. Pozostałe trzy kamery działają normalnie.',
-                'history' => [
-                    ['02.11, 07:40', 'przypisano do technika'],
-                    ['01.11, 21:15', 'zgłoszenie utworzone przez klienta'],
-                ],
-            ],
+            'ticket' => $ticket,
         ]);
     }
 

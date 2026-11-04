@@ -4,76 +4,56 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Repository\InMemoryInstallationRepository;
+use App\Repository\InstallationRepositoryInterface;
+
 final class InstallationController extends AppController
 {
-    // Dane przykładowe. W kolejnych zadaniach zastąpi je baza danych.
-    private const INSTALLATIONS = [
-        1 => [
-            'client' => 'Anna Nowak',
-            'address' => 'ul. Lipowa 12, Kraków',
-            'type' => 'Alarm, monitoring i sieć',
-            'nextInspection' => '2026-11-14',
-        ],
-        2 => [
-            'client' => 'Jan Kowalski',
-            'address' => 'ul. Polna 3, Skawina',
-            'type' => 'System alarmowy',
-            'nextInspection' => '2026-12-02',
-        ],
-        3 => [
-            'client' => 'Sklep „Pod Dębem”',
-            'address' => 'Rynek 4, Wieliczka',
-            'type' => 'System alarmowy',
-            'nextInspection' => '2026-11-21',
-        ],
-    ];
+    private const DEMO_INSTALLATION_ID = 1;
+
+    public function __construct(
+        private readonly InstallationRepositoryInterface $installations = new InMemoryInstallationRepository(),
+    ) {
+    }
 
     public function index(): void
     {
         $this->render('installations', [
             'pageTitle' => 'Instalacje',
-            'installations' => self::INSTALLATIONS,
+            'installations' => $this->installations->findAll(),
         ]);
     }
 
     public function show(int $id): void
     {
-        $installation = self::INSTALLATIONS[$id] ?? null;
+        $installation = $this->installations->find($id);
 
         if ($installation === null) {
-            http_response_code(404);
-            (new DefaultController())->notFound();
+            $this->renderNotFound();
 
             return;
         }
 
         $this->render('installation', [
-            'pageTitle' => 'Instalacja: ' . $installation['client'],
-            'installationId' => $id,
+            'pageTitle' => 'Instalacja: ' . $installation->getClientName(),
             'installation' => $installation,
         ]);
     }
 
     public function mobileCard(): void
     {
+        $installation = $this->installations->find(self::DEMO_INSTALLATION_ID);
+
+        if ($installation === null) {
+            $this->renderNotFound();
+
+            return;
+        }
+
         $this->render('mobile/installation', [
             'pageTitle' => 'Karta instalacji',
-            'installation' => [
-                'client' => 'Anna Nowak',
-                'address' => 'Dom, ul. Lipowa 12, Kraków',
-                'type' => 'Alarm + monitoring + sieć',
-                'since' => '14.03.2025',
-                'inspection' => '14.11.2026',
-                'daysLeft' => 12,
-                'devices' => [
-                    ['name' => 'Centrala alarmowa', 'place' => 'Garaż, szafka techniczna', 'state' => 'Akumulator', 'tone' => 'warn'],
-                    ['name' => 'Czujnik ruchu', 'place' => 'Salon, strefa 1', 'state' => 'OK', 'tone' => 'ok'],
-                    ['name' => 'Kamera IP – ogród', 'place' => 'Elewacja tylna, kanał 3', 'state' => 'Awaria', 'tone' => 'bad'],
-                    ['name' => 'Kamera IP – wjazd', 'place' => 'Elewacja przednia, kanał 1', 'state' => 'OK', 'tone' => 'ok'],
-                    ['name' => 'Rejestrator NVR', 'place' => '8 kanałów, szafka techniczna', 'state' => 'OK', 'tone' => 'ok'],
-                    ['name' => 'Switch PoE', 'place' => 'Szafka techniczna', 'state' => 'OK', 'tone' => 'ok'],
-                ],
-            ],
+            'installation' => $installation,
+            'daysLeft' => $installation->daysUntilInspection(new \DateTimeImmutable('today')),
         ]);
     }
 }

@@ -5,10 +5,10 @@
     <section class="card" aria-labelledby="installations-list">
         <h2 id="installations-list">Lista instalacji klientów</h2>
         <ul class="plain-list">
-            <?php foreach ($installations as $id => $installation): ?>
+            <?php foreach ($installations as $installation): ?>
                 <li>
-                    <a href="/installations/<?= (int) $id ?>"><?= htmlspecialchars($installation['client']) ?></a>
-                    <span class="muted"> – <?= htmlspecialchars($installation['address']) ?></span>
+                    <a href="/installations/<?= $installation->getId() ?>"><?= htmlspecialchars($installation->getClientName()) ?></a>
+                    <span class="muted"> – <?= htmlspecialchars($installation->getAddress()) ?></span>
                 </li>
             <?php endforeach; ?>
         </ul>
