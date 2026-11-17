@@ -10,11 +10,28 @@ use App\Controller\ProjectController;
 use App\Controller\ProtocolController;
 use App\Controller\SecurityController;
 use App\Controller\TicketController;
+use App\Container;
+use App\Database;
+use App\Repository\InstallationRepositoryInterface;
+use App\Repository\PdoInstallationRepository;
+use App\Repository\PdoTicketRepository;
+use App\Repository\TicketRepositoryInterface;
 use App\Routing;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-$routing = new Routing();
+$container = new Container();
+$container->bind(PDO::class, static fn (): PDO => Database::fromEnvironment()->connect());
+$container->bind(
+    TicketRepositoryInterface::class,
+    static fn (Container $c): PdoTicketRepository => new PdoTicketRepository($c->get(PDO::class)),
+);
+$container->bind(
+    InstallationRepositoryInterface::class,
+    static fn (Container $c): PdoInstallationRepository => new PdoInstallationRepository($c->get(PDO::class)),
+);
+
+$routing = new Routing($container);
 
 $routing->get('/projects', ProjectController::class, 'index');
 $routing->get('/projects/{id}', ProjectController::class, 'show');
@@ -35,10 +52,17 @@ $routing->get('/m/report', TicketController::class, 'mobileReport');
 $routing->get('/m/installation', InstallationController::class, 'mobileCard');
 
 
-$routeFound = $routing->dispatch(
-    $_SERVER['REQUEST_METHOD'],
-    $_SERVER['REQUEST_URI'],
-);
+try {
+    $routeFound = $routing->dispatch(
+        $_SERVER['REQUEST_METHOD'],
+        $_SERVER['REQUEST_URI'],
+    );
+} catch (Throwable $exception) {
+    error_log((string) $exception);
+    (new DefaultController())->serverError();
+
+    return;
+}
 
 if (!$routeFound) {
     (new DefaultController())->notFound();

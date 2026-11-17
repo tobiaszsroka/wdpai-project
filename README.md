@@ -54,6 +54,8 @@ docker compose exec php composer dump-autoload
 
 Polecenie `composer dump-autoload` jest potrzebne, bo katalog `vendor/` nie jest w repozytorium. Zatrzymanie: `docker compose down`.
 
+Przy pierwszym starcie pustego wolumenu baza sama wykonuje skrypty z katalogu `database/` (schemat i dane demo).
+
 ## Konfiguracja
 
 Ustawienia są w pliku `.env`, który powstaje z kopii `.env.example`. Plik `.env` nie trafia do repozytorium. W `.env.example` są tylko wartości przykładowe, nigdy prawdziwe sekrety.
@@ -63,6 +65,7 @@ Ustawienia są w pliku `.env`, który powstaje z kopii `.env.example`. Plik `.en
 | `APP_PORT` | Port aplikacji na komputerze (domyślnie 8080) |
 | `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Nazwa bazy oraz dane dostępowe do PostgreSQL |
 | `POSTGRES_PORT` | Port bazy na komputerze |
+| `DB_HOST`, `DB_PORT` | Host i port bazy widziane z kontenera PHP (w `docker-compose.yaml`: `db` i `5432`) |
 | `MAILPIT_PORT` | Port interfejsu Mailpit |
 | `PGADMIN_DEFAULT_EMAIL`, `PGADMIN_DEFAULT_PASSWORD` | Konto logowania do pgAdmin |
 | `PGADMIN_PORT` | Port pgAdmin |
@@ -103,6 +106,7 @@ Aplikacja działa w układzie MVC. Wszystkie żądania trafiają do `public/inde
 
 ```
 .
+├── database/               # schemat i dane demo PostgreSQL (*.sql)
 ├── docker/                 # Dockerfile'e: nginx, php, db
 ├── docker-compose.yaml     # definicja usług
 ├── public/                 # jedyny katalog dostępny z internetu
@@ -113,10 +117,84 @@ Aplikacja działa w układzie MVC. Wszystkie żądania trafiają do `public/inde
 │       └── mobile/         # widoki mobilne
 ├── src/
 │   ├── Routing.php         # dopasowanie tras do kontrolerów
-│   └── controllers/        # kontrolery (przestrzeń App\Controller)
+│   ├── Container.php       # składanie zależności (kontrolery, repozytoria, PDO)
+│   ├── Database.php        # połączenie PDO z PostgreSQL (konfiguracja z .env)
+│   ├── controllers/        # kontrolery (przestrzeń App\Controller)
+│   ├── models/             # encje i enumy (App\Model)
+│   └── repositories/       # SQL i mapowanie wierszy na modele (App\Repository)
 ├── composer.json           # autoloading PSR-4
 └── .env.example            # wzór konfiguracji
 ```
+
+## Baza danych i ERD
+
+Dane są w PostgreSQL 16. Połączenie tworzy `App\Database` na podstawie zmiennych środowiskowych, a cały SQL jest w `src/repositories/` (zapytania parametryzowane przez PDO). Kontrolery dostają repozytoria przez interfejsy, a widoki dostają obiekty z `src/models/`.
+
+```mermaid
+erDiagram
+    CLIENTS ||--o{ INSTALLATIONS : "ma"
+    INSTALLATIONS ||--o{ DEVICES : "zawiera"
+    INSTALLATIONS ||--o{ TICKETS : "dotyczy"
+    TICKETS ||--o{ TICKET_HISTORY : "ma wpisy"
+
+    CLIENTS {
+        bigint id PK
+        varchar name "NOT NULL"
+        varchar email
+        varchar phone
+        timestamptz created_at
+    }
+    INSTALLATIONS {
+        bigint id PK
+        bigint client_id FK "ON DELETE RESTRICT"
+        varchar site_name
+        varchar address "NOT NULL"
+        varchar type "NOT NULL"
+        date installed_at
+        date next_inspection
+        varchar inspection_note
+    }
+    DEVICES {
+        bigint id PK
+        bigint installation_id FK "ON DELETE CASCADE"
+        varchar name "NOT NULL"
+        varchar place
+        varchar state "CHECK: ok, battery_low, failure"
+    }
+    TICKETS {
+        bigint id PK
+        bigint installation_id FK "ON DELETE RESTRICT"
+        varchar category
+        varchar title
+        text description
+        varchar status "CHECK: new, scheduled, assigned, in_progress, waiting_for_part, done"
+        boolean urgent
+        varchar technician
+        time visit_time
+        timestamptz created_at
+        timestamptz updated_at
+    }
+    TICKET_HISTORY {
+        bigint id PK
+        bigint ticket_id FK "ON DELETE CASCADE"
+        timestamptz occurred_at
+        varchar description
+    }
+```
+
+Usunięcie klienta lub instalacji z istniejącymi zgłoszeniami jest blokowane (`RESTRICT`), a urządzenia i historia znikają razem z rodzicem (`CASCADE`). Pole `technician` jest na razie tekstem. Zamieni je klucz obcy do tabeli użytkowników, gdy dojdą konta i role.
+
+### Import bazy i dane demo
+
+Nowy wolumen dostaje schemat i dane automatycznie. Dla istniejącej bazy (lub po `docker compose down -v`) skrypty można wykonać ręcznie:
+
+```bash
+docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < database/01-schema.sql
+docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < database/02-seed.sql
+docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "\d tickets"'
+```
+
+Dane demo nie zawierają haseł do urządzeń ani kodów alarmowych.
 
 ## Trasy i testy
 
