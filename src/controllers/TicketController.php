@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Repository\InMemoryTicketRepository;
 use App\Repository\TicketRepositoryInterface;
 
 final class TicketController extends AppController
@@ -12,7 +11,7 @@ final class TicketController extends AppController
     private const DEMO_TECHNICIAN = 'Piotr Wiśniewski';
 
     public function __construct(
-        private readonly TicketRepositoryInterface $tickets = new InMemoryTicketRepository(),
+        private readonly TicketRepositoryInterface $tickets,
     ) {
     }
 

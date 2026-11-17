@@ -10,7 +10,8 @@ final class Ticket
      * @param list<array{0: \DateTimeImmutable, 1: string}> $history Wpisy od najnowszego.
      */
     public function __construct(
-        private readonly int $id,
+        private ?int $id,
+        private readonly int $installationId,
         private readonly string $clientName,
         private readonly string $category,
         private readonly string $title,
@@ -23,7 +24,7 @@ final class Ticket
         private readonly ?string $visitTime = null,
         private readonly array $history = [],
     ) {
-        if ($id <= 0) {
+        if ($id !== null && $id <= 0) {
             throw new \InvalidArgumentException('Ticket id must be positive.');
         }
 
@@ -32,9 +33,20 @@ final class Ticket
         }
     }
 
-    public function getId(): int
+    /** Zgłoszenie jeszcze niezapisane w bazie nie ma identyfikatora. */
+    public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getInstallationId(): int
+    {
+        return $this->installationId;
     }
 
     public function getClientName(): string

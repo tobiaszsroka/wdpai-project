@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Repository\InMemoryInstallationRepository;
 use App\Repository\InstallationRepositoryInterface;
 
 final class InstallationController extends AppController
@@ -12,7 +11,7 @@ final class InstallationController extends AppController
     private const DEMO_INSTALLATION_ID = 1;
 
     public function __construct(
-        private readonly InstallationRepositoryInterface $installations = new InMemoryInstallationRepository(),
+        private readonly InstallationRepositoryInterface $installations,
     ) {
     }
 
