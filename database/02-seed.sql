@@ -8,6 +8,14 @@ INSERT INTO clients (name, email, phone) VALUES
     ('Biuro Lex', 'biuro@lex.example.com', NULL),
     ('Maria Wójcik', NULL, NULL);
 
+-- Konta demo. Wszystkie mają to samo hasło demo (patrz README), w bazie tylko hash bcrypt.
+INSERT INTO users (client_id, name, email, password_hash, role) VALUES
+    (NULL, 'Marta Zielińska', 'marta.zielinska@serwisbook.example', '$2y$10$EQx7JM7A3q.D96AAwjkMUOcOGAjG6UNwGR.3EqgsJlmpt1oPdfdXK', 'admin'),
+    (NULL, 'Piotr Wiśniewski', 'piotr.wisniewski@serwisbook.example', '$2y$10$EQx7JM7A3q.D96AAwjkMUOcOGAjG6UNwGR.3EqgsJlmpt1oPdfdXK', 'technician'),
+    (NULL, 'Tomasz Lis', 'tomasz.lis@serwisbook.example', '$2y$10$EQx7JM7A3q.D96AAwjkMUOcOGAjG6UNwGR.3EqgsJlmpt1oPdfdXK', 'technician'),
+    (1, 'Anna Nowak', 'anna.nowak@example.com', '$2y$10$EQx7JM7A3q.D96AAwjkMUOcOGAjG6UNwGR.3EqgsJlmpt1oPdfdXK', 'client'),
+    (2, 'Jan Kowalski', 'jan.kowalski@example.com', '$2y$10$EQx7JM7A3q.D96AAwjkMUOcOGAjG6UNwGR.3EqgsJlmpt1oPdfdXK', 'client');
+
 INSERT INTO installations (client_id, site_name, address, type, installed_at, next_inspection, inspection_note) VALUES
     (1, 'Dom', 'ul. Lipowa 12, Kraków', 'Alarm, monitoring i sieć', '2025-03-14', '2026-11-14', 'wymiana akumulatora centrali'),
     (2, NULL, 'ul. Polna 3, Skawina', 'System alarmowy', '2024-12-02', '2026-12-02', NULL),
