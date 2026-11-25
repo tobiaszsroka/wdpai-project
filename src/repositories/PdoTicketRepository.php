@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Model\Ticket;
 use App\Model\TicketStatus;
+use App\Model\VisitTime;
 use DateTimeImmutable;
 use PDO;
 
@@ -22,9 +23,13 @@ final class PdoTicketRepository implements TicketRepositoryInterface
     {
     }
 
-    public function findAll(): array
+    public function findAll(?TicketStatus $status = null): array
     {
-        $statement = $this->database->query(self::SELECT . ' ORDER BY t.created_at DESC, t.id DESC');
+        $statement = $this->database->prepare(
+            self::SELECT . ' WHERE (:status::text IS NULL OR t.status = :status::text)
+                ORDER BY t.created_at DESC, t.id DESC',
+        );
+        $statement->execute(['status' => $status?->value]);
 
         return array_map($this->mapRowToTicket(...), $statement->fetchAll());
     }
@@ -130,7 +135,7 @@ final class PdoTicketRepository implements TicketRepositoryInterface
             status: TicketStatus::from((string) $row['status']),
             urgent: (bool) $row['urgent'],
             technician: $row['technician'] === null ? null : (string) $row['technician'],
-            visitTime: $row['visit_time'] === null ? null : (string) $row['visit_time'],
+            visitTime: $row['visit_time'] === null ? null : VisitTime::fromString((string) $row['visit_time']),
             history: $history,
         );
     }

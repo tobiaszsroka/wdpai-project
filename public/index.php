@@ -16,11 +16,13 @@ use App\Repository\InstallationRepositoryInterface;
 use App\Repository\PdoInstallationRepository;
 use App\Repository\PdoTicketRepository;
 use App\Repository\TicketRepositoryInterface;
+use App\Request;
 use App\Routing;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 $container = new Container();
+$container->bind(Request::class, static fn (): Request => Request::fromGlobals());
 $container->bind(PDO::class, static fn (): PDO => Database::fromEnvironment()->connect());
 $container->bind(
     TicketRepositoryInterface::class,
@@ -49,6 +51,8 @@ $routing->get('/m/login', SecurityController::class, 'mobileLogin');
 $routing->get('/m/tasks', TicketController::class, 'mobileIndex');
 $routing->get('/m/tasks/{id}', TicketController::class, 'mobileShow');
 $routing->get('/m/report', TicketController::class, 'mobileReport');
+$routing->post('/m/report', TicketController::class, 'mobileReportSubmit');
+$routing->post('/m/tasks/{id}', TicketController::class, 'mobileUpdateStatus');
 $routing->get('/m/installation', InstallationController::class, 'mobileCard');
 
 

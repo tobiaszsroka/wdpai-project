@@ -245,6 +245,8 @@ td {
 }
 
 .info-box,
+.success-box,
+.error-box,
 .brand-box {
     padding: 0.875rem 1rem;
     border-radius: var(--radius-sm);
@@ -253,6 +255,10 @@ td {
 }
 
 .info-box { background: var(--color-info-bg); color: var(--color-info-text); }
+.success-box { background: var(--color-success-bg); color: var(--color-success-text); }
+.error-box { background: var(--color-danger-bg); color: var(--color-danger-text); }
+.field-error { margin: 0.25rem 0 0; font-size: 0.875rem; font-weight: 600; color: var(--color-danger-text); }
+[aria-invalid="true"] { border-color: var(--color-danger-text); }
 .brand-box { background: var(--color-subtle); color: var(--color-text); }
 
 .logo {

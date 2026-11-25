@@ -21,7 +21,7 @@ final class Ticket
         private readonly TicketStatus $status,
         private readonly bool $urgent = false,
         private readonly ?string $technician = null,
-        private readonly ?string $visitTime = null,
+        private readonly ?VisitTime $visitTime = null,
         private readonly array $history = [],
     ) {
         if ($id !== null && $id <= 0) {
@@ -94,7 +94,7 @@ final class Ticket
         return $this->technician;
     }
 
-    public function getVisitTime(): ?string
+    public function getVisitTime(): ?VisitTime
     {
         return $this->visitTime;
     }

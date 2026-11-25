@@ -25,4 +25,18 @@ abstract class AppController
             'pageTitle' => 'Nie znaleziono strony',
         ]);
     }
+
+    protected function renderBadRequest(): void
+    {
+        http_response_code(400);
+        $this->render('bad-request', [
+            'pageTitle' => 'Nieprawidłowe żądanie',
+        ]);
+    }
+
+    /** Przekierowanie po udanym POST (wzorzec Post/Redirect/Get). */
+    protected function redirect(string $path): void
+    {
+        header('Location: ' . $path, true, 303);
+    }
 }

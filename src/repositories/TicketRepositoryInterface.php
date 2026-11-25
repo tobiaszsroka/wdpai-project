@@ -9,8 +9,11 @@ use App\Model\TicketStatus;
 
 interface TicketRepositoryInterface
 {
-    /** @return list<Ticket> Od najnowszego zgłoszenia, bez historii zmian. */
-    public function findAll(): array;
+    /**
+     * @param TicketStatus|null $status Gdy podany, zwraca tylko zgłoszenia o tym statusie.
+     * @return list<Ticket> Od najnowszego zgłoszenia, bez historii zmian.
+     */
+    public function findAll(?TicketStatus $status = null): array;
 
     /** Zgłoszenie razem z historią zmian. */
     public function find(int $id): ?Ticket;

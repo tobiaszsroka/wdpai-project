@@ -198,7 +198,7 @@ Dane demo nie zawierają haseł do urządzeń ani kodów alarmowych.
 
 ## Trasy i testy
 
-Obecnie wszystkie trasy to widoki typu GET. Parametr `{id}` przyjmuje tylko cyfry, a nieznany adres daje stronę 404.
+Parametr `{id}` przyjmuje tylko cyfry, a nieznany adres daje stronę 404. Niepoprawna wartość w żądaniu (np. nieznany status) daje stronę 400, a błędy walidacji formularza kod 422 z komunikatami przy polach.
 
 | Widok | Adres |
 |---|---|
@@ -207,13 +207,24 @@ Obecnie wszystkie trasy to widoki typu GET. Parametr `{id}` przyjmuje tylko cyfr
 | Logowanie (web, mobile) | `/login`, `/m/login` |
 | Panel główny | `/dashboard` |
 | Klienci i instalacje | `/clients` |
-| Zgłoszenia serwisowe | `/tickets` |
+| Zgłoszenia serwisowe (filtr: `?status=new\|scheduled\|assigned\|in_progress\|waiting_for_part\|done`) | `/tickets` |
 | Protokół prac | `/protocols` |
 | Moje zadania, szczegóły zgłoszenia (mobile) | `/m/tasks`, `/m/tasks/{id}` |
-| Zgłoś usterkę (mobile) | `/m/report` |
+| Zgłoś usterkę (mobile): formularz GET, zapis POST, potwierdzenie `?created={id}` | `/m/report` |
+| Zmiana statusu zgłoszenia (POST, `status=...`) | `/m/tasks/{id}` |
 | Karta instalacji (mobile) | `/m/installation` |
 
-Endpointy do zapisu danych (POST) i automatyczne testy zostaną dodane w kolejnych etapach.
+Po udanym POST aplikacja przekierowuje (303) na stronę GET, więc odświeżenie nie wysyła formularza drugi raz. Automatyczne testy zostaną dodane w kolejnych etapach.
+
+### Rodzaje obiektów w kodzie
+
+| Rodzaj | Klasa | Rola |
+|---|---|---|
+| Entity | `Ticket`, `Installation`, `Device` | rekord z tożsamością (id), prywatne pola i gettery |
+| DTO | `ReportTicketData` | przenosi dane formularza do serwisu, bez logiki |
+| Value Object | `VisitTime` | godzina wizyty: niemutowalna, walidowana w konstruktorze |
+
+Wiersze z bazy mapują ręcznie metody `mapRowTo...` w repozytoriach (`FETCH_ASSOC`). Nie używamy `FETCH_CLASS`, bo wymaga publicznych pól i omija konstruktor, czyli walidację i hermetyzację.
 
 ## Autorzy
 
