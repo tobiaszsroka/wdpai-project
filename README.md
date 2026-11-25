@@ -133,6 +133,7 @@ Dane są w PostgreSQL 16. Połączenie tworzy `App\Database` na podstawie zmienn
 ```mermaid
 erDiagram
     CLIENTS ||--o{ INSTALLATIONS : "ma"
+    CLIENTS ||--o{ USERS : "konta klientów"
     INSTALLATIONS ||--o{ DEVICES : "zawiera"
     INSTALLATIONS ||--o{ TICKETS : "dotyczy"
     TICKETS ||--o{ TICKET_HISTORY : "ma wpisy"
@@ -142,6 +143,15 @@ erDiagram
         varchar name "NOT NULL"
         varchar email
         varchar phone
+        timestamptz created_at
+    }
+    USERS {
+        bigint id PK
+        bigint client_id FK "tylko rola client, ON DELETE CASCADE"
+        varchar name "NOT NULL"
+        varchar email "UNIQUE (LOWER)"
+        varchar password_hash "bcrypt"
+        varchar role "CHECK: client, technician, admin"
         timestamptz created_at
     }
     INSTALLATIONS {
@@ -186,7 +196,7 @@ Usunięcie klienta lub instalacji z istniejącymi zgłoszeniami jest blokowane (
 
 ### Import bazy i dane demo
 
-Nowy wolumen dostaje schemat i dane automatycznie. Dla istniejącej bazy (lub po `docker compose down -v`) skrypty można wykonać ręcznie:
+Nowy wolumen dostaje schemat i dane automatycznie. Po aktualizacji repozytorium, która zmienia schemat (np. tabela `users`), wykonaj `docker compose down -v`, żeby baza utworzyła się od nowa. Dla istniejącej bazy (lub po `docker compose down -v`) skrypty można wykonać ręcznie:
 
 ```bash
 docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"' < database/01-schema.sql
@@ -196,6 +206,33 @@ docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "\d 
 
 Dane demo nie zawierają haseł do urządzeń ani kodów alarmowych.
 
+## Konta demo, role i uprawnienia
+
+Dane demo mają trzy role. Wszystkie konta demo mają to samo hasło: `Demo!2026pass` (w bazie jest tylko hash bcrypt). To hasło jest wyłącznie do danych demonstracyjnych.
+
+| Rola | E-mail | Po zalogowaniu |
+|---|---|---|
+| Administrator | `marta.zielinska@serwisbook.example` | `/dashboard` |
+| Technik | `piotr.wisniewski@serwisbook.example` (drugi: `tomasz.lis@serwisbook.example`) | `/m/tasks` |
+| Klient | `anna.nowak@example.com` (drugi: `jan.kowalski@example.com`) | `/m/report` |
+
+Uprawnienia są zapisane w jednym miejscu, na liście tras w `public/index.php` (biała lista ról na trasę). Sprawdza je `AccessControl` w `Routing`, zanim zadziała kontroler.
+
+| Zasób | Administrator | Technik | Klient |
+|---|---|---|---|
+| `/dashboard`, `/clients`, `/tickets` | tak | 403 | 403 |
+| `/protocols` | tak | tak | 403 |
+| `/m/tasks` (lista zadań) | 403 | tak | 403 |
+| `/m/tasks/{id}` (podgląd, zmiana statusu) | wszystkie | tylko własne | 403 |
+| `/m/report` (zgłoszenie usterki) | 403 | 403 | tak, tylko do własnych instalacji |
+| `/installations`, `/m/installation` | wszystkie | wszystkie | tylko własne |
+
+Brak sesji daje przekierowanie na stronę logowania (dla żądań z `Accept: application/json` kod 401), a brak uprawnień kod 403.
+
+Zabezpieczenia: hasła tylko jako `password_hash()`/`password_verify()`, jeden ogólny komunikat błędu logowania (kod 401) i wyrównany czas odpowiedzi dla nieistniejącego konta, nowy identyfikator sesji po zalogowaniu (`session_regenerate_id`), ciasteczko sesyjne `HttpOnly`, `SameSite=Lax` i `Secure` na HTTPS, token CSRF we wszystkich żądaniach POST (sprawdzany centralnie w `Routing`), wylogowanie przez POST niszczy sesję i ciasteczko, zapytania parametryzowane, dane w HTML przez `htmlspecialchars()`. Rola konta nigdy nie pochodzi z formularza: rejestracja zawsze tworzy klienta (klient i konto powstają w jednej transakcji).
+
+Nie ma jeszcze: ograniczania liczby prób logowania, resetu hasła ani limitu bezczynności sesji.
+
 ## Trasy i testy
 
 Parametr `{id}` przyjmuje tylko cyfry, a nieznany adres daje stronę 404. Niepoprawna wartość w żądaniu (np. nieznany status) daje stronę 400, a błędy walidacji formularza kod 422 z komunikatami przy polach.
@@ -204,7 +241,9 @@ Parametr `{id}` przyjmuje tylko cyfry, a nieznany adres daje stronę 404. Niepop
 |---|---|
 | Strona główna | `/` |
 | Instalacje (lista, szczegóły) | `/installations`, `/installations/{id}` |
-| Logowanie (web, mobile) | `/login`, `/m/login` |
+| Logowanie (web, mobile): GET formularz, POST logowanie | `/login`, `/m/login` |
+| Rejestracja klienta (GET, POST) | `/register` |
+| Wylogowanie (POST z tokenem CSRF) | `/logout` |
 | Panel główny | `/dashboard` |
 | Klienci i instalacje | `/clients` |
 | Zgłoszenia serwisowe (filtr: `?status=new\|scheduled\|assigned\|in_progress\|waiting_for_part\|done`) | `/tickets` |
