@@ -34,4 +34,14 @@ enum TicketStatus: string
             self::Done => 'ok',
         };
     }
+
+    /**
+     * Statusy, które technik może ustawić ręcznie na karcie zgłoszenia.
+     *
+     * @return list<self>
+     */
+    public static function selectableByTechnician(): array
+    {
+        return [self::Assigned, self::InProgress, self::WaitingForPart, self::Done];
+    }
 }

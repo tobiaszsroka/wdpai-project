@@ -23,9 +23,13 @@ final class PdoTicketRepository implements TicketRepositoryInterface
     {
     }
 
-    public function findAll(): array
+    public function findAll(?TicketStatus $status = null): array
     {
-        $statement = $this->database->query(self::SELECT . ' ORDER BY t.created_at DESC, t.id DESC');
+        $statement = $this->database->prepare(
+            self::SELECT . ' WHERE (:status::text IS NULL OR t.status = :status::text)
+                ORDER BY t.created_at DESC, t.id DESC',
+        );
+        $statement->execute(['status' => $status?->value]);
 
         return array_map($this->mapRowToTicket(...), $statement->fetchAll());
     }
