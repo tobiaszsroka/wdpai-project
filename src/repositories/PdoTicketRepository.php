@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Model\Ticket;
 use App\Model\TicketStatus;
+use App\Model\VisitTime;
 use DateTimeImmutable;
 use PDO;
 
@@ -130,7 +131,7 @@ final class PdoTicketRepository implements TicketRepositoryInterface
             status: TicketStatus::from((string) $row['status']),
             urgent: (bool) $row['urgent'],
             technician: $row['technician'] === null ? null : (string) $row['technician'],
-            visitTime: $row['visit_time'] === null ? null : (string) $row['visit_time'],
+            visitTime: $row['visit_time'] === null ? null : VisitTime::fromString((string) $row['visit_time']),
             history: $history,
         );
     }
