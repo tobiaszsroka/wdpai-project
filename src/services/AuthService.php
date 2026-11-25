@@ -14,7 +14,7 @@ final class AuthService
     public const PASSWORD_MIN_LENGTH = 8;
 
     /** Hash do „pustej” weryfikacji, aby czas odpowiedzi nie zdradzał, czy e-mail istnieje. */
-    private const DUMMY_HASH = '$2y$10$usesomesillystringforsalt.4Tn3k0bJmhbaQ0Xc3xBQvUBpFUxDq';
+    private const DUMMY_HASH = '$2y$10$esvFriDWZb5lpYIAL7Yjge/mhLTrXpa7hfuUN8ri/4MID82qotPki';
 
     public function __construct(private readonly UserRepositoryInterface $users)
     {

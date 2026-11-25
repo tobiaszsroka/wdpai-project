@@ -12,16 +12,23 @@
         <div>
             <div class="tabs">
                 <a href="/login" aria-current="page">Logowanie</a>
-                <a href="/login#rejestracja">Rejestracja klienta</a>
+                <a href="/register">Rejestracja klienta</a>
             </div>
+            <?php if ($registered): ?>
+                <p class="success-box" role="status">Konto zostało utworzone. Możesz się zalogować.</p>
+            <?php endif; ?>
+            <?php if ($errors !== []): ?>
+                <p class="error-box" role="alert"><?= htmlspecialchars(implode(' ', $errors)) ?></p>
+            <?php endif; ?>
             <form method="post" action="/login">
+                <?php require __DIR__ . '/partials/csrf-field.html.php'; ?>
                 <div class="field">
                     <label for="email">Adres e-mail</label>
-                    <input id="email" name="email" type="email" placeholder="jan.kowalski@example.com" required>
+                    <input id="email" name="email" type="email" value="<?= htmlspecialchars($email) ?>" placeholder="jan.kowalski@example.com" autocomplete="username" required>
                 </div>
                 <div class="field">
                     <label for="password">Hasło</label>
-                    <input id="password" name="password" type="password" placeholder="••••••••" required>
+                    <input id="password" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required>
                 </div>
                 <button type="submit" class="btn btn-block">Zaloguj się</button>
                 <p><a href="#">Nie pamiętam hasła</a></p>
@@ -29,6 +36,7 @@
             <section id="rejestracja" class="brand-box mt-4">
                 <h2 class="title-sm">Pierwszy raz tutaj?</h2>
                 <p>Klient zakłada konto, podając e-mail i hasło. Konta techników tworzy administrator firmy instalacyjnej.</p>
+                <p><a href="/register">Załóż konto klienta</a></p>
             </section>
         </div>
     </main>
