@@ -6,6 +6,7 @@
 /** @var int|null $createdId */
 $selectedInstallation = $data?->installationId;
 $selectedCategory = $data?->category;
+$active = 'report';
 require __DIR__ . '/../partials/head.html.php';
 ?>
 <div class="phone">
@@ -14,11 +15,15 @@ require __DIR__ . '/../partials/head.html.php';
         <p>Opisz problem, a firma serwisowa się z Tobą skontaktuje.</p>
     </header>
     <form class="phone-body" method="post" action="/m/report" enctype="multipart/form-data" novalidate>
+        <?php require __DIR__ . '/../partials/csrf-field.html.php'; ?>
         <?php if ($createdId !== null): ?>
             <p class="success-box" role="status">Zgłoszenie #<?= (int) $createdId ?> zostało przyjęte.</p>
         <?php endif; ?>
         <?php if ($errors !== []): ?>
             <p class="error-box" role="alert">Popraw zaznaczone pola i wyślij formularz ponownie.</p>
+        <?php endif; ?>
+        <?php if ($installations === []): ?>
+            <p class="info-box" role="status">Nie masz jeszcze przypisanej instalacji. Skontaktuj się z firmą serwisową.</p>
         <?php endif; ?>
         <div class="field"><label for="installation">Instalacja</label>
             <select id="installation" name="installation" required<?= isset($errors['installation']) ? ' aria-invalid="true" aria-describedby="installation-error"' : '' ?>>
@@ -42,5 +47,6 @@ require __DIR__ . '/../partials/head.html.php';
         <p class="info-box">Po wysłaniu dostaniesz numer zgłoszenia i powiadomienie e-mail o zmianie statusu.</p>
         <button type="submit" class="btn btn-block mt-auto">Wyślij zgłoszenie</button>
     </form>
+    <?php require __DIR__ . '/../partials/tabbar.html.php'; ?>
 </div>
 <?php require __DIR__ . '/../partials/foot.html.php'; ?>

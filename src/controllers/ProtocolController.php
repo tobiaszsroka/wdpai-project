@@ -11,8 +11,6 @@ final class ProtocolController extends AppController
         $this->render('protocols', [
             'pageTitle' => 'Protokół prac',
             'active' => 'protocols',
-            'userName' => 'Piotr Wiśniewski',
-            'userRole' => 'Technik',
             'protocol' => [
                 'number' => 'P/2026/118',
                 'date' => '02.11.2026',

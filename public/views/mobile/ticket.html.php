@@ -21,6 +21,7 @@
             <?php endforeach; ?>
         </section>
         <form method="post" action="/m/tasks/<?= $ticket->getId() ?>">
+            <?php require __DIR__ . '/../partials/csrf-field.html.php'; ?>
             <div class="field"><label for="status">Zmień status</label>
                 <select id="status" name="status">
                     <?php foreach ($statuses as $status): ?>

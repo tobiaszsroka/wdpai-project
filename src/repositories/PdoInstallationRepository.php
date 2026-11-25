@@ -12,7 +12,7 @@ use PDO;
 
 final class PdoInstallationRepository implements InstallationRepositoryInterface
 {
-    private const SELECT = 'SELECT i.id, c.name AS client_name, i.site_name, i.address, i.type,
+    private const SELECT = 'SELECT i.id, i.client_id, c.name AS client_name, i.site_name, i.address, i.type,
                 i.installed_at, i.next_inspection, i.inspection_note
             FROM installations i
             JOIN clients c ON c.id = i.client_id';
@@ -24,6 +24,14 @@ final class PdoInstallationRepository implements InstallationRepositoryInterface
     public function findAll(): array
     {
         $statement = $this->database->query(self::SELECT . ' ORDER BY i.id');
+
+        return array_map($this->mapRowToInstallation(...), $statement->fetchAll());
+    }
+
+    public function findByClientId(int $clientId): array
+    {
+        $statement = $this->database->prepare(self::SELECT . ' WHERE i.client_id = :client_id ORDER BY i.id');
+        $statement->execute(['client_id' => $clientId]);
 
         return array_map($this->mapRowToInstallation(...), $statement->fetchAll());
     }
@@ -63,6 +71,7 @@ final class PdoInstallationRepository implements InstallationRepositoryInterface
     {
         return new Installation(
             id: (int) $row['id'],
+            clientId: (int) $row['client_id'],
             clientName: (string) $row['client_name'],
             siteName: $row['site_name'] === null ? null : (string) $row['site_name'],
             address: (string) $row['address'],

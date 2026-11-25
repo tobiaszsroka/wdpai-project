@@ -11,5 +11,8 @@ interface InstallationRepositoryInterface
     /** @return list<Installation> */
     public function findAll(): array;
 
+    /** @return list<Installation> Instalacje jednego klienta. */
+    public function findByClientId(int $clientId): array;
+
     public function find(int $id): ?Installation;
 }

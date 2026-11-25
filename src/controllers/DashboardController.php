@@ -11,8 +11,6 @@ final class DashboardController extends AppController
         $this->render('dashboard', [
             'pageTitle' => 'Panel główny',
             'active' => 'dashboard',
-            'userName' => 'Marta Zielińska',
-            'userRole' => 'Administrator',
             'today' => 'Poniedziałek, 2 listopada 2026',
             'stats' => [
                 'Otwarte zgłoszenia' => 7,

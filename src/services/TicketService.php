@@ -30,16 +30,18 @@ final class TicketService
 
     /**
      * Waliduje zgłoszenie klienta i zapisuje je jako nowe.
+     * Instalacja musi należeć do klienta o identyfikatorze $reporterClientId.
      *
      * @throws ValidationException gdy dane są niepoprawne
      */
-    public function report(ReportTicketData $data): Ticket
+    public function report(ReportTicketData $data, int $reporterClientId): Ticket
     {
         $installation = $this->installations->find($data->installationId);
         $description = trim($data->description);
         $errors = [];
 
-        if ($installation === null) {
+        // Klient może zgłaszać usterki tylko do własnych instalacji.
+        if ($installation === null || $installation->getClientId() !== $reporterClientId) {
             $errors['installation'] = 'Wybierz instalację z listy.';
         }
 

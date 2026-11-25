@@ -8,20 +8,24 @@ use App\Dto\ReportTicketData;
 use App\Model\TicketStatus;
 use App\Repository\InstallationRepositoryInterface;
 use App\Repository\TicketRepositoryInterface;
+use App\Model\Ticket;
+use App\Model\UserRole;
 use App\Request;
+use App\Service\ForbiddenException;
 use App\Service\TicketService;
 use App\Service\ValidationException;
+use App\Session;
 
 final class TicketController extends AppController
 {
-    private const DEMO_TECHNICIAN = 'Piotr Wiśniewski';
-
     public function __construct(
+        Session $session,
         private readonly TicketRepositoryInterface $tickets,
         private readonly InstallationRepositoryInterface $installations,
         private readonly TicketService $ticketService,
         private readonly Request $request,
     ) {
+        parent::__construct($session);
     }
 
     public function index(): void
@@ -52,8 +56,8 @@ final class TicketController extends AppController
         $this->render('mobile/tasks', [
             'pageTitle' => 'Moje zadania',
             'today' => 'Poniedziałek, 2 listopada',
-            'technician' => self::DEMO_TECHNICIAN,
-            'tasks' => $this->tickets->findByTechnician(self::DEMO_TECHNICIAN),
+            'technician' => (string) $this->session->userName(),
+            'tasks' => $this->tickets->findByTechnician((string) $this->session->userName()),
         ]);
     }
 
@@ -67,6 +71,8 @@ final class TicketController extends AppController
             return;
         }
 
+        $this->assertCanHandle($ticket);
+
         $this->render('mobile/ticket', [
             'pageTitle' => 'Zgłoszenie #' . $id,
             'ticket' => $ticket,
@@ -76,11 +82,15 @@ final class TicketController extends AppController
 
     public function mobileUpdateStatus(int $id): void
     {
-        if ($this->tickets->find($id) === null) {
+        $ticket = $this->tickets->find($id);
+
+        if ($ticket === null) {
             $this->renderNotFound();
 
             return;
         }
+
+        $this->assertCanHandle($ticket);
 
         $status = TicketStatus::tryFrom((string) $this->request->post('status'));
 
@@ -113,7 +123,7 @@ final class TicketController extends AppController
         );
 
         try {
-            $ticket = $this->ticketService->report($data);
+            $ticket = $this->ticketService->report($data, (int) $this->session->clientId());
         } catch (ValidationException $exception) {
             http_response_code(422);
             $this->renderReportForm(errors: $exception->getErrors(), data: $data);
@@ -130,7 +140,7 @@ final class TicketController extends AppController
     private function renderReportForm(?int $createdId = null, array $errors = [], ?ReportTicketData $data = null): void
     {
         $options = [];
-        foreach ($this->installations->findAll() as $installation) {
+        foreach ($this->installations->findByClientId((int) $this->session->clientId()) as $installation) {
             $options[$installation->getId()] = $installation->getClientName() . ' – ' . $installation->getTitle();
         }
 
@@ -142,5 +152,14 @@ final class TicketController extends AppController
             'data' => $data,
             'createdId' => $createdId,
         ]);
+    }
+
+    /** Technik obsługuje tylko zgłoszenia przypisane do siebie, administrator wszystkie. */
+    private function assertCanHandle(Ticket $ticket): void
+    {
+        if ($this->session->role() === UserRole::Technician
+            && $ticket->getTechnician() !== $this->session->userName()) {
+            throw new ForbiddenException('Ticket assigned to another technician.');
+        }
     }
 }

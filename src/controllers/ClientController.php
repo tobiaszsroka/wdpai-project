@@ -11,8 +11,6 @@ final class ClientController extends AppController
         $this->render('clients', [
             'pageTitle' => 'Klienci i instalacje',
             'active' => 'clients',
-            'userName' => 'Marta Zielińska',
-            'userRole' => 'Administrator',
             'clients' => [
                 ['name' => 'Anna Nowak', 'summary' => '2 instalacje · Kraków'],
                 ['name' => 'Jan Kowalski', 'summary' => '1 instalacja · Skawina'],
