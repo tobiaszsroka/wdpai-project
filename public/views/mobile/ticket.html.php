@@ -22,7 +22,11 @@
         </section>
         <form method="post" action="/m/tasks/<?= $ticket->getId() ?>">
             <div class="field"><label for="status">Zmień status</label>
-                <select id="status" name="status"><option>Przypisane</option><option>W toku</option><option>Oczekuje na część</option><option>Zakończone</option></select></div>
+                <select id="status" name="status">
+                    <?php foreach ($statuses as $status): ?>
+                        <option value="<?= htmlspecialchars($status->value) ?>"<?= $ticket->getStatus() === $status ? ' selected' : '' ?>><?= htmlspecialchars($status->label()) ?></option>
+                    <?php endforeach; ?>
+                </select></div>
             <div class="actions-row">
                 <button type="submit" class="btn">Zapisz status</button>
                 <a class="btn btn-outline" href="/protocols">Utwórz protokół</a>

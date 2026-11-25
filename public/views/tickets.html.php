@@ -8,11 +8,17 @@
         </header>
         <form class="filters" method="get" action="/tickets">
             <div class="field"><label for="status">Status</label>
-                <select id="status" name="status"><option>Wszystkie</option><option>Nowe</option><option>W toku</option><option>Zakończone</option></select></div>
+                <select id="status" name="status">
+                    <option value="">Wszystkie</option>
+                    <?php foreach ($statuses as $status): ?>
+                        <option value="<?= htmlspecialchars($status->value) ?>"<?= $selectedStatus === $status ? ' selected' : '' ?>><?= htmlspecialchars($status->label()) ?></option>
+                    <?php endforeach; ?>
+                </select></div>
             <div class="field"><label for="tech">Technik</label>
                 <select id="tech" name="tech"><option>Wszyscy</option><?php foreach ($technicians as $t): ?><option><?= htmlspecialchars($t) ?></option><?php endforeach; ?></select></div>
             <div class="field"><label for="q">Szukaj</label>
                 <input id="q" name="q" type="search" placeholder="Klient lub numer"></div>
+            <button type="submit" class="btn">Filtruj</button>
         </form>
         <section class="card" aria-label="Lista zgłoszeń">
             <div class="table-wrap">
