@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App;
 
 use App\Controller\AppController;
+use App\Model\UserRole;
+use App\Service\AccessControl;
+use App\Service\ForbiddenException;
 
 final class Routing
 {
@@ -14,14 +17,16 @@ final class Routing
     {
     }
 
-    public function get(string $path, string $controller, string $action): void
+    /** @param list<UserRole>|null $roles Dozwolone role; null oznacza trasę publiczną. */
+    public function get(string $path, string $controller, string $action, ?array $roles = null): void
     {
-        $this->add('GET', $path, $controller, $action);
+        $this->add('GET', $path, $controller, $action, $roles);
     }
 
-    public function post(string $path, string $controller, string $action): void
+    /** @param list<UserRole>|null $roles Dozwolone role; null oznacza trasę publiczną. */
+    public function post(string $path, string $controller, string $action, ?array $roles = null): void
     {
-        $this->add('POST', $path, $controller, $action);
+        $this->add('POST', $path, $controller, $action, $roles);
     }
 
     private function add(
@@ -29,12 +34,14 @@ final class Routing
         string $path,
         string $controller,
         string $action,
+        ?array $roles,
     ): void {
         $this->routes[] = [
             'method' => $method,
             'pattern' => $this->createPattern($path),
             'controller' => $controller,
             'action' => $action,
+            'roles' => $roles,
         ];
     }
 
@@ -86,6 +93,12 @@ final class Routing
                 $parameters,
             );
 
+            $this->container->get(AccessControl::class)->check($route['roles']);
+
+            if ($method === 'POST') {
+                $this->assertValidCsrfToken();
+            }
+
             $controllerClass = $route['controller'];
             $controller = $this->container->get($controllerClass);
 
@@ -99,5 +112,15 @@ final class Routing
         }
 
         return false;
+    }
+
+    /** Każde żądanie POST musi zawierać token CSRF z bieżącej sesji. */
+    private function assertValidCsrfToken(): void
+    {
+        $token = $this->container->get(Request::class)->post('csrfToken') ?? '';
+
+        if (!$this->container->get(Session::class)->isCsrfTokenValid($token)) {
+            throw new ForbiddenException('Invalid CSRF token.');
+        }
     }
 }

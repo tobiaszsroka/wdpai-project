@@ -11,6 +11,7 @@ final class Installation
      */
     public function __construct(
         private readonly int $id,
+        private readonly int $clientId,
         private readonly string $clientName,
         private readonly ?string $siteName,
         private readonly string $address,
@@ -32,6 +33,11 @@ final class Installation
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getClientId(): int
+    {
+        return $this->clientId;
     }
 
     public function getClientName(): string

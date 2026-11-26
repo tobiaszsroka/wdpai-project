@@ -19,6 +19,11 @@ final class DefaultController extends AppController
         $this->renderNotFound();
     }
 
+    public function forbidden(): void
+    {
+        $this->renderForbidden();
+    }
+
     public function serverError(): void
     {
         http_response_code(500);

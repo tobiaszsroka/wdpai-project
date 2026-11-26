@@ -9,6 +9,23 @@ CREATE TABLE clients (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE users (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    client_id BIGINT NULL,
+    name VARCHAR(120) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'client',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT users_client_fk
+        FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
+    CONSTRAINT users_role_check CHECK (role IN ('client', 'technician', 'admin')),
+    -- Konto klienta jest powiązane z klientem, konta firmy (technik, administrator) nie.
+    CONSTRAINT users_client_link_check CHECK ((role = 'client') = (client_id IS NOT NULL))
+);
+
+CREATE UNIQUE INDEX users_email_unique ON users (LOWER(email));
+
 CREATE TABLE installations (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     client_id BIGINT NOT NULL,
